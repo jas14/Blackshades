@@ -12,16 +12,18 @@ Use [homebrew](http://mxcl.github.com/homebrew/) to install `alut` and `sdl_imag
 Make sure to install necessary libraries `libalut` and `libsdl-image` and then run `make -f Makefile.linux`.
 
 ## Controls
-* WASD = walk
-* shift = run
-* mouse = look
-* control = crouch/zoom
-* click = fire (while aiming) or smash (while running) or pick up gun (while crouching over a body and not aiming) or disarm (while not aiming)
-* q = aim or un-aim (important for picking up guns)
-* r = reload
-* e = psychic aim
+* WASD / left stick = walk
+* shift / L3 = run
+* mouse / right stick = look
+* control / LT = crouch/zoom
+* click / RT = fire (while aiming) or smash (while running) or pick up gun (while crouching over a body and not aiming) or disarm (while not aiming)
+* q / Y = aim or un-aim (important for picking up guns)
+* r / X = reload
+* e / B = psychic aim
+* l / SELECT = laser sight
 * z = toggle soul release
-* space = dive (while running forwards)
+* space / A= dive (while running forwards)
+* esc / START = pause game
 
 ## Debug mode
 

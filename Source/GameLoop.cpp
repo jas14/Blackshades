@@ -3,51 +3,67 @@
 
 
 extern double multiplier;
-
 extern int visions;
-
 extern unsigned int gSourceID[100];
-
 extern unsigned int gSampleSet[100];
-
 extern Camera camera;
-
 extern float rad2deg;
-
 extern Fog fog;
-
 extern int environment;
-
 extern int slomo;
+
+/********************> HandleJoyMotion() <*****/
+
+
+void	Game::HandleJoyMotion( SDL_Event *ev )
+{
+/*	SDL_Event event = *ev;
+	
+	int val = ((event.jaxis.value * 7) / 30000);
+	if (event.jaxis.axis == 0) {
+		// left stick l/r
+	} else if (event.jaxis.axis == 1) {
+		// left stick u/d
+		mackey = sdlkeymap[SDLK_w];
+
+		if (mackey != -1) {
+			index = mackey / 8;
+			mask = 1 << (mackey % 8);
+			
+			if (press) {
+				ourkeys[index] |= mask;
+			} else {
+				ourkeys[index] &= ~mask;
+			}
+		}
+		// person[0].velocity.z += 10;
+	} else if (event.jaxis.axis == 3) {
+		// right axis l/r
+		camera.rotation += val;
+	} else if (event.jaxis.axis == 4) {
+		// right axis u/d
+		camera.rotation2 += val;
+	}
+	printf("yay\n"); */
+}
 
 /********************> HandleKeyDown() <*****/
 
 void	Game::HandleKeyDown( char theChar )
-
 {
-
 	XYZ facing;
 
-	
-
-	if(!mainmenu){
+	if (mainmenu) return;
 
 	switch( theChar )
-
 	{
-
 		case 'l': 
-		        if(!lasersight==1){lasersight=1;}else{lasersight=0;} 
-			
+			lasersight = !lasersight;
 			break;
 
 		case 'k':
-
 			if(debug)timeremaining=0;
-
 			break;
-
-		
 
 		case 'b':
 
@@ -84,10 +100,9 @@ void	Game::HandleKeyDown( char theChar )
 		case 'B':
 
 			if(debug){
-
-			alSourcePlay(gSourceID[soulinsound]);
-
-			paused=1-paused;}
+				alSourcePlay(gSourceID[soulinsound]);
+				paused=1-paused;
+			}
 
 			break;
 
@@ -146,29 +161,18 @@ void	Game::HandleKeyDown( char theChar )
 			break;
 
 		case 'X':
-
 			if(debug){
-
-			if(person[0].grenphase==0){
-
-				person[0].ammo=-1;
-
-				person[0].whichgun++;
-
-				person[0].grenphase=0;
-
-				person[0].reloads[person[0].whichgun]=3;
-
-				if(person[0].whichgun>7)person[0].whichgun=0;
-
-			}}
-
+				if(person[0].grenphase==0){
+					person[0].ammo=-1;
+					person[0].whichgun++;
+					person[0].grenphase=0;
+					person[0].reloads[person[0].whichgun]=3;
+					if(person[0].whichgun>7)person[0].whichgun=0;
+				}
+			}
 			break;
 
 	}
-
-	}
-
 }
 
 
@@ -179,9 +183,6 @@ void	Game::HandleKeyDown( char theChar )
 void	Game::DoEvent( EventRecord *event )
 
 {
-
-	
-
 	char	theChar;
 
 	
@@ -316,18 +317,109 @@ void GetKeys(unsigned long *keys)
 	memcpy(keys, ourkeys, sizeof(ourkeys));
 }
 
+static void JoySetKey( int whichkey, int press)
+{
+	int mackey;
+	int mask;
+	int index;
+
+	if (mapinit == 0) {
+		init_sdlkeymap();
+	}
+	
+	if (whichkey > 0) {
+		mackey = sdlkeymap[whichkey];
+		if (mackey != -1) {
+			index = mackey / 8;
+			mask = 1 << (mackey % 8);
+			
+			if (press) {
+				ourkeys[index] |= mask;
+			} else {
+				ourkeys[index] &= ~mask;
+			}
+		}
+	}
+}
+
+static void DoJoyButton( Game *g, SDL_Event *ev )
+{
+	SDL_Event event = *ev;
+	
+	int which = 0;
+	switch (event.jbutton.button) {
+		case 0:
+			// A (jump/space)
+			which = SDLK_SPACE;
+			break;
+		case 1:
+			// B (slowmo)
+			which = SDLK_e;
+			break;
+		case 2:
+			// X (reload)
+			which = SDLK_r;
+			break;
+		case 3:
+			// Y (disarm)
+			which = SDLK_q;
+			break;
+		case 6:
+			// SELECT (laser sight)
+			which = SDLK_l;
+			break;
+		case 7:
+			// START (esc)
+			which = SDLK_ESCAPE;
+			break;
+		case 9:
+			// L3 (sprint)
+			which = SDLK_LSHIFT;
+			break;
+	}
+	if (which) {
+		JoySetKey(which, event.jbutton.type == SDL_JOYBUTTONDOWN);
+	}
+}
+
+static void DoJoyMotion( Game *g, SDL_Event *ev )
+{	
+	SDL_Event event = *ev;
+	int whichkey = 0;
+	
+	int val = ((event.jaxis.value * 7) / 30000);
+	if (event.jaxis.axis == 0) {
+		// left stick l/r
+		if (val > 0)
+			whichkey = SDLK_d;
+		else
+			whichkey = SDLK_a;
+	} else if (event.jaxis.axis == 1) {
+		// left stick u/d
+		if (val > 0)
+			whichkey = SDLK_s;
+		else
+			whichkey = SDLK_w;
+	} else if (event.jaxis.axis == 2) {
+		// LT (aim)
+		val += 6;
+		whichkey = SDLK_LCTRL;
+	}
+
+	JoySetKey(whichkey, abs(val) > 1);
+}
+
 static void DoSDLKey(Game *g, SDL_Event *event)
 {
 	int press = (event->type == SDL_KEYDOWN) ? 1 : 0;
 	int mackey;
 	int index;
 	int mask;
-	
 
 	if (mapinit == 0) {
 		init_sdlkeymap();
 	}
-	
+
 	mackey = sdlkeymap[event->key.keysym.sym];
 	
 	if (mackey != -1) {
@@ -347,8 +439,6 @@ static void DoSDLKey(Game *g, SDL_Event *event)
 		/* hey, at least it was aleady public */
 		g->HandleKeyDown(event->key.keysym.unicode);
 	}
-	
-	
 }
 
 static void ProcessSDLEvents(Game *g)
@@ -359,32 +449,39 @@ static void ProcessSDLEvents(Game *g)
 		do {
 			switch(event.type) {
 				case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_RETURN &&
-					event.key.keysym.mod & KMOD_ALT)
-				{
-					SDL_WM_ToggleFullScreen (SDL_GetVideoSurface ());
-					break;
-				}
-				if (event.key.keysym.sym == SDLK_g &&
-					event.key.keysym.mod & KMOD_CTRL)
-				{
-					if (SDL_WM_GrabInput (SDL_GRAB_QUERY) == SDL_GRAB_OFF)
+					if (event.key.keysym.sym == SDLK_RETURN &&
+						event.key.keysym.mod & KMOD_ALT)
 					{
-						SDL_WM_GrabInput (SDL_GRAB_ON);
-						SDL_ShowCursor (SDL_DISABLE);
+						SDL_WM_ToggleFullScreen (SDL_GetVideoSurface ());
+						break;
 					}
-					else
+					if (event.key.keysym.sym == SDLK_g &&
+						event.key.keysym.mod & KMOD_CTRL)
 					{
-						SDL_WM_GrabInput (SDL_GRAB_OFF);
-						SDL_ShowCursor (SDL_ENABLE);
+						if (SDL_WM_GrabInput (SDL_GRAB_QUERY) == SDL_GRAB_OFF)
+						{
+							SDL_WM_GrabInput (SDL_GRAB_ON);
+							SDL_ShowCursor (SDL_DISABLE);
+						}
+						else
+						{
+							SDL_WM_GrabInput (SDL_GRAB_OFF);
+							SDL_ShowCursor (SDL_ENABLE);
+						}
+						break;
 					}
-					break;
-				}
 				case SDL_KEYUP:
 					DoSDLKey(g, &event);
 					break;
 				case SDL_QUIT:
 					exit(0);
+				case SDL_JOYAXISMOTION:
+					DoJoyMotion(g, &event);
+					break;
+				case SDL_JOYBUTTONDOWN:
+				case SDL_JOYBUTTONUP:
+					DoJoyButton(g, &event);
+					break;
 			}
 		} while (SDL_PollEvent(&event));
 	}
@@ -395,13 +492,7 @@ static void ProcessSDLEvents(Game *g)
 /********************> EventLoop() <*****/
 
 void	Game::EventLoop( void )
-
 {
-
-#ifdef OS9 
-	EventRecord		event;
-#endif
-
 	unsigned char	theKeyMap[16];
 
 	int colaccuracy,i;
@@ -410,23 +501,19 @@ void	Game::EventLoop( void )
 
 	gQuit = false;
 
+	// initialize joystick
+	if (SDL_NumJoysticks() > 0) {
+		SDL_JoystickEventState(SDL_ENABLE);
+		if (SDL_JoystickOpen(0) < 0) {
+			fprintf(stderr, "Could not open joystick\n");
+		}
+	}
+
 	while ( gQuit == false )
-
 	{
-
-#ifdef OS9 
-		if ( GetNextEvent( everyEvent, &event ) )
-
-			DoEvent( &event );
-#else
 		ProcessSDLEvents(this);
-#endif
-		
-
 		start=TimerGetTime(&theTimer);
-
 		
-
 		colaccuracy=sps/framespersecond+1;
 
 		if(colaccuracy>sps){colaccuracy=sps;}

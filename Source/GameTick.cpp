@@ -1,58 +1,34 @@
 #include "Game.h"	
 
-
-
 extern double multiplier;
-
 extern int thirdperson;
-
 extern int visions;
-
 extern Sprites sprites;
 
 
 
 extern unsigned int gSourceID[100];
-
 extern unsigned int gSampleSet[100];
-
 extern Camera camera;
-
 extern float camerashake;
-
 extern Fog fog;
-
 extern int environment;
-
 extern float precipitationhorz;
-
 extern float precipitationvert;
-
 extern float snowdelay;
-
 extern float precipitationdensity;
-
 extern float soundscalefactor;
-
 extern int slomo;
 
 
 
 extern int forwardskey;
-
 extern int backwardskey;
-
 extern int leftkey;
-
 extern int rightkey;
-
 extern int aimkey;
-
 extern int psychicaimkey;
-
 extern int psychickey;
-
-
 
 extern Decals decals;
 
@@ -128,21 +104,13 @@ void 	Game::Tick(){
 
 	if(mainmenu){
 
-		
-
 		unsigned char	theKeyMap[16];
 
 		GetKeys( ( unsigned long * )theKeyMap );
-
 		
-
 		if(IsKeyDown(theKeyMap, MAC_SPACE_KEY)){
-
 			mainmenu=0;
-
 		}
-
-		
 
 		GetMouse(&mouseloc);
 
@@ -329,24 +297,12 @@ void 	Game::Tick(){
 
 	if(!mainmenu){
 
-		
-
-		
-
 		XYZ facing;
-
 		XYZ flatfacing;
 
-		float speed=10;
-
-		
-
 		if(person[1].health<=0||person[0].health<=0||killedinnocent){
-
 			losedelay-=multiplier/6;
-
 		}
-
 		
 
 		if(person[1].health>0&&person[0].health>0&&!killedinnocent)timeremaining-=multiplier*25/40;
@@ -502,13 +458,10 @@ void 	Game::Tick(){
 		//Facing
 
 		facing=0;
-
 		facing.z=-1;
 
-		
 
 		facing=DoRotation(facing,-camera.rotation2,0,0);
-
 		facing=DoRotation(facing,0,0-camera.rotation,0);
 
 		
@@ -522,22 +475,15 @@ void 	Game::Tick(){
 		
 
 		if(IsKeyDown(theKeyMap, psychickey)&&!oldvisionkey){
-
 			oldvisionkey=1;
-
 			visions++;
 
 			if(visions==2)visions=0;
 
 			if(visions==0){
 
-				float rad2deg=56.54866776;
-
 				flashamount=1;
-
 				flashr=1;flashg=1;flashb=1;
-
-				
 
 				if(person[0].playercoords.x!=bodycoords.x||person[0].playercoords.z!=bodycoords.z){
 
@@ -719,52 +665,11 @@ void 	Game::Tick(){
 
 		}
 
-#if 0	// DDOI
-		GetMouse(&mouseloc);
-
-		if (mouseloc.h>600){MoveMouse(mouseloc.h-500,mouseloc.v,&mouseloc);}
-
-		if (mouseloc.h<100){MoveMouse(mouseloc.h+500,mouseloc.v,&mouseloc);}
-
-		GetMouse(&mouseloc);
-
-		if (mouseloc.v>400){MoveMouse(mouseloc.h,mouseloc.v-300,&mouseloc);}
-
-		if (mouseloc.v<100){MoveMouse(mouseloc.h,mouseloc.v+300,&mouseloc);}
-
-		GetMouse(&mouseloc);
-
-#else
 		GetMouseRel(&mouseloc);
-#endif
-
-		
-
-#if 0	// DDOI
-		oldmouserotation=(oldmouseloc.h/1.3888)*mousesensitivity;
-
-		oldmouserotation2=(oldmouseloc.v/1.3888)*mousesensitivity;
-#endif
 
 		mouserotation=(mouseloc.h/1.3888)*mousesensitivity;
-
 		mouserotation2=(mouseloc.v/1.3888)*mousesensitivity;
 
-		
-
-#if 0	// DDOI
-		if(abs(oldmouseloc.h-mouseloc.h)<400)camera.rotation+=mouserotation-oldmouserotation;
-
-		if(abs(oldmouseloc.v-mouseloc.v)<200)camera.rotation2+=mouserotation2-oldmouserotation2;
-
-		if(mouseloc.h-oldmouseloc.h>400)camera.rotation+=mouserotation-oldmouserotation-(500/1.3888*mousesensitivity);
-
-		if(mouseloc.h-oldmouseloc.h<-400)camera.rotation+=mouserotation-oldmouserotation+(500/1.3888*mousesensitivity);
-
-		if(mouseloc.v-oldmouseloc.v>200)camera.rotation2+=mouserotation2-oldmouserotation2-(300/1.3888*mousesensitivity);
-
-		if(mouseloc.v-oldmouseloc.v<-200)camera.rotation2+=mouserotation2-oldmouserotation2+(300/1.3888*mousesensitivity);
-#else
 		if(abs(mouseloc.h)<400)camera.rotation+=mouserotation;
 		if(abs(mouseloc.v)<200)camera.rotation2+=mouserotation2;
 		if(mouseloc.h>400)camera.rotation+=mouserotation-(500/1.3888*mousesensitivity);
@@ -773,8 +678,6 @@ void 	Game::Tick(){
 		if(mouseloc.v>200)camera.rotation2+=mouserotation2-(300/1.3888*mousesensitivity);
 
 		if(mouseloc.v<-200)camera.rotation2+=mouserotation2+(300/1.3888*mousesensitivity);
-#endif
-
 		
 
 		if(camera.rotation2>89){camera.rotation2=89;}
@@ -831,19 +734,11 @@ void 	Game::Tick(){
 
 		int beginz,endz;
 
-		int distsquared;
-
 		XYZ collpoint;
 
 		XYZ move;
 
-		float howmuchintersect;
-
 		int whichtri;
-
-		float olddist;
-
-		XYZ nothing;
 
 		XYZ underpoint;
 
@@ -854,8 +749,6 @@ void 	Game::Tick(){
 		float depth;
 
 		XYZ normalrotated;
-
-		XYZ pointrotated;
 
 		bool inblock;
 
@@ -909,22 +802,6 @@ void 	Game::Tick(){
 			endz=(person[k].playercoords.z+block_spacing/2)/block_spacing+1;
 
 			if(endz>num_blocks-1)endz=num_blocks-1;
-
-			
-
-			if(k!=0){
-				/* TODO: huh? */
-				beginx==person[k].whichblockx;
-
-				beginz==person[k].whichblocky;
-
-				endx==person[k].whichblockx;
-
-				endz==person[k].whichblocky;
-
-			}
-
-			
 
 			if(beginx<=endx&&beginz<=endz)
 
@@ -1965,13 +1842,9 @@ void 	Game::Tick(){
 							 	}
 
 							 	if(person[person[i].killtarget].eaten==i&&person[i].targetanimation!=zombieeatanim){
-
 							 		person[i].targetanimation=zombieeatanim;
-
 									person[i].targetframe=0;
-
 									person[i].target=0;
-
 							 	}
 
 							 	enemystate=1;
@@ -2201,11 +2074,8 @@ void 	Game::Tick(){
 								}
 
 								if(person[i].type==eviltype){
-
 									 if(!person[i].killtargetvisible&&person[i].targetanimation==idleanim){
-
 									 	person[i].targetanimation=joganim;
-
 									 }
 
 									 if(!person[i].killtargetvisible){
@@ -2363,13 +2233,9 @@ void 	Game::Tick(){
 									 }
 
 									 if(person[i].killtargetvisible){
-
 									 	person[i].onpath=0;
-
 									 	person[i].lastdistancevictim=200000;
-
 									 	person[i].pathnum=-1;
-
 									 	if(person[i].aiming==0)person[i].shotdelay=shotdelayamount/difficulty;
 
 									 	if(findDistancefast(person[i].playercoords, person[person[i].killtarget].playercoords)>20||person[i].targetanimation!=idleanim)
@@ -3748,7 +3614,7 @@ void 	Game::Tick(){
 
 							if(person[whichhit].health>0){
 
-								if(person[whichhit].killtargetvisible==0&&person[whichhit].type!=zombietype&&person[whichhit].currentanimation!=getupfrontanim&person[whichhit].currentanimation!=getupbackanim){
+								if(!person[whichhit].killtargetvisible && person[whichhit].type!=zombietype && person[whichhit].currentanimation!=getupfrontanim && person[whichhit].currentanimation!=getupbackanim){
 
 									if(hitstruct.joint1->modelnum==headmodel)person[whichhit].targetanimation=headpainanim;
 
@@ -4090,7 +3956,7 @@ void 	Game::Tick(){
 
 					//Firing
 
-					XYZ end, aim, oldend;
+					XYZ end, aim;
 
 					HitStruct hitstruct,temphitstruct;
 
@@ -4334,7 +4200,7 @@ void 	Game::Tick(){
 
 		//Grenade collision
 
-		int wherex,wherey,whichsound,severwhat;
+		int wherex,wherey,whichsound;
 
 		bool impact;
 
@@ -4887,8 +4753,6 @@ void 	Game::Tick(){
 		
 
 		//3d sound
-
-		ALint tempInt;
 
 		float gLoc[3];
 

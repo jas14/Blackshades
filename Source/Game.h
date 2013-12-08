@@ -70,10 +70,7 @@ class Game
 		timer theTimer;	
 		float sps;
 		int maxfps;
-#ifdef OS9 
-		AGLContext gOpenGLContext;
-		CGrafPtr	theScreen;
-#endif
+
 		//Graphics
 		int screenwidth,screenheight;
 		float viewdistance;
@@ -86,9 +83,7 @@ class Game
 		
 		//Game Functions
 		void	HandleKeyDown( char theChar );
-#ifdef OS9 
-		void	DoEvent( EventRecord *event );
-#endif
+		void	HandleJoyMotion( SDL_Event *event );
 		void	EventLoop( void );
 		void 	Tick();
 		void 	Splat(int k);

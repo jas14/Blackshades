@@ -4106,9 +4106,9 @@ int Game::InitGL(void)
 
 		return;
 #else
-        if (SDL_Init(SDL_INIT_VIDEO) == -1) {
-		fprintf(stderr, "SDL Init Video failed: %s\n", SDL_GetError());
-		exit(EXIT_FAILURE);
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) == -1) {
+			fprintf(stderr, "SDL Init Video failed: %s\n", SDL_GetError());
+			exit(EXIT_FAILURE);
         }
         
 	atexit(SDL_Quit);

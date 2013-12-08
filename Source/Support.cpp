@@ -11,6 +11,9 @@
 #include "Support.h"
 #include "Files.h"
 
+int _jsFound = -1;
+SDL_Joystick *js;
+
 int Random()
 {
 #if RAND_MAX >= 65535
@@ -46,12 +49,43 @@ void GetMouseRel(Point *p)
 	
 	SDL_GetRelativeMouseState(&x, &y);
 	
+	if (_jsFound < 0) {
+		if (SDL_NumJoysticks() > 0) {
+			_jsFound = 0;
+			if (!(js = SDL_JoystickOpen(0)))
+				fprintf(stderr, "failed to init joystick\n");
+			else
+				_jsFound = 1;
+		} else {
+			_jsFound = 0;
+		}
+	}
+	if (js) {
+		x += SDL_JoystickGetAxis(js, 3) / 3000;
+		y += SDL_JoystickGetAxis(js, 4) / 3000;
+	}
+	
 	p->h = x;
 	p->v = y;
 }
+
 int Button(void)
 {
-	return (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(1));
+	int x = 0;
+	if (js) {
+		x = SDL_JoystickGetAxis(js, 5);
+	} else if (_jsFound < 0) {
+		if (SDL_NumJoysticks() > 0) {
+			_jsFound = 0;
+			if (!(js = SDL_JoystickOpen(0)))
+				fprintf(stderr, "failed to init joystick\n");
+			else
+				_jsFound = 1;
+		} else {
+			_jsFound = 0;
+		}
+	}
+	return (x && x > -20000) || (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(1));
 }
 
 void InitMouse()
